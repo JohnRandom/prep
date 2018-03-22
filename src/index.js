@@ -107,10 +107,12 @@ async function prepRoute(route, configuration) {
     })
 
     debug('Nightmare started')
-    
+
     const host = configuration.hostname ? configuration.hostname : `http${configuration.https ? 's' : ''}://localhost:${program.port}`
-    const url = `${host}/${route}`
-    
+    const extraParams = process.env.EXTRA_PARAMS;
+    let url = `${host}/${route}`
+    if (extraParams) { url += `?${extraParams}` }
+
     const content = await nightmare
         .useragent(configuration.useragent)
         .viewport(configuration.dimensions.width, configuration.dimensions.height)
