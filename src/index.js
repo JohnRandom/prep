@@ -110,8 +110,13 @@ async function prepRoute(route, configuration) {
 
     const host = configuration.hostname ? configuration.hostname : `http${configuration.https ? 's' : ''}://localhost:${program.port}`
     const extraParams = process.env.EXTRA_PARAMS;
+    const baseUrl = process.env.BASE_URL;
     let url = `${host}/${route}`
+
+    if (baseUrl) { url = `${host}/${baseUrl}/${route}` }
     if (extraParams) { url += `?${extraParams}` }
+
+    console.log('### PREP ###', url)
 
     const content = await nightmare
         .useragent(configuration.useragent)
