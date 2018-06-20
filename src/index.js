@@ -82,6 +82,7 @@ async function crawlAndWrite(configuration) {
                 return
             } catch (e) {
                 retryCount++
+                debug('error during rendering', e);
                 console.warn(`Retry ${retryCount} for route: ${route}`)
             }
         }
