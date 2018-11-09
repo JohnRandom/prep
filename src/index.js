@@ -124,7 +124,15 @@ async function prepRoute(route, configuration) {
         .goto(url)
         .evaluate(() => false) // wait until page loaded
         .wait(configuration.timeout)
-        .evaluate(() => document.documentElement.outerHTML)
+        .evaluate(() => {
+            const { doctype, documentElement } = document;
+            const elements = [documentElement.outerHTML];
+            if (doctype === null) {
+                const doctypeAsString = new XMLSerializer().serializeToString(doctype);
+                elements.unshift(doctypeAsString);
+            }
+            return elements.join('');
+         })
         .end()
 
     debug('Crawling completed: %s', url)
