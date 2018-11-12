@@ -126,8 +126,7 @@ async function prepRoute(route, configuration) {
         .evaluate(() => {
           const { documentElement } = document
           let html = documentElement.outerHTML || ''
-
-          hasDoctype = html.toLowerCase().startsWith('<!doctype')
+          const hasDoctype = html.toLowerCase().startsWith('<!doctype')
 
           if (!hasDoctype) {
             html = '<!DOCTYPE html>\n' + html
