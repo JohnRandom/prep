@@ -117,8 +117,6 @@ async function prepRoute(route, configuration) {
     if (baseUrl) { url = `${host}/${baseUrl}/${route}` }
     if (extraParams) { url += `?${extraParams}` }
 
-    console.log('### PREP ###', url)
-
     const content = await nightmare
         .useragent(configuration.useragent)
         .viewport(configuration.dimensions.width, configuration.dimensions.height)
@@ -126,14 +124,16 @@ async function prepRoute(route, configuration) {
         .evaluate(() => false) // wait until page loaded
         .wait(configuration.timeout)
         .evaluate(() => {
-            const { doctype, documentElement } = document;
-            const elements = [documentElement.outerHTML];
-            if (doctype === null) {
-                const doctypeAsString = new XMLSerializer().serializeToString(doctype);
-                elements.unshift(doctypeAsString);
-            }
-            return elements.join('');
-         })
+          const { documentElement } = document
+          let html = documentElement.outerHTML || ''
+
+          hasDoctype = html.toLowerCase().startsWith('<!doctype')
+
+          if (!hasDoctype) {
+            html = '<!DOCTYPE html>\n' + html
+          }
+          return html
+        })
         .end()
 
     debug('Crawling completed: %s', url)
@@ -152,7 +152,7 @@ async function prepRoute(route, configuration) {
     }
 
     const logFileName = `${route}/index.html`.replace(/^\//, '')
-    console.log(`prep: Rendered ${logFileName}`)
+    debug('Rendered %s', logFileName)
 }
 
 async function run() {
